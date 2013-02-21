@@ -1,0 +1,22 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Searcher</title>
+</head>
+  <body>
+    <form action="/admin/searcher/test/" method="POST">
+    <input type="text" name="keyword" value="{{ keyword }}" size="30"/>
+    <input type="submit" name="action" value="Search" />
+    </form>
+{% for page in pages %}
+<br/>
+<br/>{{ page.title }}
+<br/>{{ page.url }}
+<br/>{{ page.published }}
+<br/>{{ page.publisher }}
+<br/>{{ page.content }}
+<br/>{{ page.img }}
+{% endfor %}
+  </body>
+</html>
+

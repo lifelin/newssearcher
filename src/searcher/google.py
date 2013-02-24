@@ -1,11 +1,31 @@
+import datetime
 import json
+import math
 import urllib2
 
 from commonutil import dateutil
 
+def _getJulian(utcdate):
+    a = (14 - utcdate.month) // 12
+    y = utcdate.year + 4800 - a
+    m = utcdate.month + 12 * a - 3
+    num = utcdate.day + ((153 * m + 2) // 5) + 365 * y + y // 4 - y // 100 + y // 400 - 32045
+    num = num + (utcdate.hour * 60 + utcdate.minute * 1.0) / 1440 - 0.5
+    return num
+
+def getGoogleJulianQuestion(value):
+    # google datarange require integer, and 'daterange:2455621-2455621' means a whole day
+    today = datetime.datetime.utcnow()
+    today_julian_f = _getJulian(today)
+    today_julian = math.floor(today_julian_f)
+    # fraction = today_julian_f - today_julian
+    start_julian = today_julian - 1
+    return value + ' daterange:' + str(int(start_julian)) + '-' + str(int(today_julian))
+
 def _getUrl(keyword):
     jsonUrl = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q={q}'
-    return jsonUrl.replace('{q}', urllib2.quote(keyword.encode('utf-8')))
+    julianQ = getGoogleJulianQuestion(keyword)
+    return jsonUrl.replace('{q}', urllib2.quote(julianQ.encode('utf-8')))
 
 def _fetch(url):
     try:

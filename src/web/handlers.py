@@ -3,7 +3,7 @@ import os
 from google.appengine.ext.webapp import template
 import webapp2
 
-from searcher import gnews
+import searcher.bs
 
 class SearchNews(webapp2.RequestHandler):
     def _render(self, templateValues):
@@ -18,7 +18,7 @@ class SearchNews(webapp2.RequestHandler):
 
     def post(self):
         keyword = self.request.get('keyword').strip()
-        pages = gnews.search(keyword)
+        pages = searcher.bs.search(keyword)
         templateValues = {
             'keyword': keyword,
             'pages': pages,

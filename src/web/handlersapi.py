@@ -5,13 +5,21 @@ from google.appengine.api import taskqueue
 
 import webapp2
 
-from commonutil import networkutil
+from commonutil import networkutil, stringutil
 
 import searcher.bs
 
 _URL_TIMEOUT = 30
 _FETCH_TRYCOUNT = 3
 _CALLBACK_TRYCOUNT = 3
+
+def _calculateHash(items):
+    lines = []
+    for item in items:
+        url = item.get('url')
+        if url:
+            lines.append(url)
+    return stringutil.calculateHash(lines)
 
 class SearchRequest(webapp2.RequestHandler):
     def post(self):
@@ -25,38 +33,31 @@ class BatchSearchRequest(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.body)
         items = data['items']
-        for item in items:
-            requestobj = {
-                'callbackurl': data['callbackurl'],
-                'origin': data['origin'],
-                'item': item,
-            }
-            rawdata = json.dumps(requestobj)
-            taskqueue.add(queue_name='default', payload=rawdata, url='/search/single/')
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.out.write('Put search task into queue.')
-
-
-class SingleSearchResponse(webapp2.RequestHandler):
-
-    def post(self):
-        self.response.headers['Content-Type'] = 'text/plain'
-        data = json.loads(self.request.body)
-        item = data['item']
-
-        pages = searcher.bs.search(item['title'])
-        if pages:
-            resultPage = pages[0]
-        else:
-            resultPage = {}
-        resultPage['keyword'] = item['title']
-        resultPage['rank'] = item['rank']
-
+        oldHash= data['hash']
         callbackurl = data['callbackurl']
+        resultItems = []
+        for item in items:
+            pages = searcher.bs.search(item['title'])
+            if pages:
+                resultPage = pages[0]
+            else:
+                resultPage = {}
+            resultPage['keyword'] = item['title']
+            resultPage['rank'] = item['rank']
+            resultPage['added'] = item['added']
+            resultItems.append(resultPage)
+
+        contentHash = _calculateHash(resultItems)
+        if oldHash == contentHash:
+            logging.info('No change fetch for %s.' % (data['origin'], ))
+            return
+
         responseData = {
                 'origin': data['origin'],
-                'items': [resultPage],
+                'items': resultItems,
+                'hash': contentHash,
         }
+
         success = networkutil.postData(callbackurl, responseData,
                     trycount=_CALLBACK_TRYCOUNT, timeout=_URL_TIMEOUT)
         if success:

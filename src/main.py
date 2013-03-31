@@ -21,7 +21,6 @@ app = webapp2.WSGIApplication([
 ('/admin/test/', web.handlers.SearchNews),
 ('/api/search/', web.handlersapi.SearchRequest),
 ('/search/batch/', web.handlersapi.BatchSearchRequest),
-('/search/single/', web.handlersapi.SingleSearchResponse),
 ],
                               debug=True)
 

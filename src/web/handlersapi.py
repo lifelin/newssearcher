@@ -7,7 +7,7 @@ import webapp2
 
 from commonutil import networkutil, stringutil
 
-import searcher.bs
+from . import bs
 
 _URL_TIMEOUT = 30
 _FETCH_TRYCOUNT = 3
@@ -37,7 +37,7 @@ class BatchSearchRequest(webapp2.RequestHandler):
         callbackurl = data['callbackurl']
         resultItems = []
         for item in items:
-            pages = searcher.bs.search(item['title'])
+            pages = bs.search(item['title'])
             if pages:
                 resultPage = pages[0]
             else:

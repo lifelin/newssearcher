@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 
@@ -5,7 +6,7 @@ from google.appengine.api import taskqueue
 
 import webapp2
 
-from commonutil import networkutil, stringutil
+from commonutil import networkutil, stringutil, dateutil
 
 from . import bs
 
@@ -36,6 +37,7 @@ class BatchSearchRequest(webapp2.RequestHandler):
         oldHash= data['hash']
         callbackurl = data['callbackurl']
         resultItems = []
+        nnow14 = dateutil.getDateAs14(datetime.datetime.utcnow())
         for item in items:
             pages = bs.search(item['title'])
             if pages:
@@ -44,7 +46,8 @@ class BatchSearchRequest(webapp2.RequestHandler):
                 resultPage = {}
             resultPage['keyword'] = item['title']
             resultPage['rank'] = item['rank']
-            resultPage['added'] = item['added']
+            resultPage['keywordadded'] = item['added']
+            resultPage['added'] = nnow14
             resultItems.append(resultPage)
 
         contentHash = _calculateHash(resultItems)

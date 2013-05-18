@@ -8,7 +8,7 @@ import webapp2
 
 from commonutil import networkutil, stringutil, dateutil
 
-from . import bs
+from . import bs, models
 
 _URL_TIMEOUT = 30
 _FETCH_TRYCOUNT = 3
@@ -42,12 +42,12 @@ class BatchSearchRequest(webapp2.RequestHandler):
             pages = bs.search(item['title'])
             if pages:
                 resultPage = pages[0]
+                resultPage['added'] = models.getUrlAdded(resultPage['url'], nnow14)
             else:
                 resultPage = {}
             resultPage['keyword'] = item['title']
             resultPage['rank'] = item['rank']
             resultPage['keywordadded'] = item['added']
-            resultPage['added'] = nnow14
             resultItems.append(resultPage)
 
         contentHash = _calculateHash(resultItems)

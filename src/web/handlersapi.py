@@ -45,6 +45,7 @@ class BatchSearchRequest(webapp2.RequestHandler):
                 resultPage['added'] = models.getUrlAdded(resultPage['url'], nnow14)
             else:
                 resultPage = {}
+                resultPage['added'] = item['added']
             resultPage['keyword'] = item['title']
             resultPage['rank'] = item['rank']
             resultPage['keywordadded'] = item['added']

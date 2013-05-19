@@ -2,7 +2,6 @@ import datetime
 
 from commonutil import dateutil
 from configmanager import cmapi
-import configmanager.models
 
 def _getItem(items, url):
     found = None
@@ -17,7 +16,7 @@ def _getKeyname():
 
 def getUrlAdded(url, added):
     items = cmapi.getItemValue(_getKeyname(), [],
-                    modelname=configmanager.models.RunStatus)
+                    modelname='RunStatus')
     found = _getItem(items, url)
     if found:
         found['count'] += 1
@@ -31,6 +30,6 @@ def getUrlAdded(url, added):
     start14 = dateutil.getHoursAs14(24)
     items = [ item for item in items if item['updated'] > start14 ]
     cmapi.saveItem(_getKeyname(), items,
-                modelname=configmanager.models.RunStatus)
+                modelname='RunStatus')
     return found['added']
 

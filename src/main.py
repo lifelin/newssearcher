@@ -4,8 +4,8 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'library'))
 
-import web.handlers
-import web.handlersapi
+import searcher.handlers
+import searcher.handlersapi
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -15,9 +15,9 @@ class MainPage(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
 ('/', MainPage),
-('/admin/test/', web.handlers.SearchNews),
-('/api/search/', web.handlersapi.SearchRequest),
-('/search/batch/', web.handlersapi.BatchSearchRequest),
+('/admin/test/', searcher.handlers.SearchNews),
+('/api/search/', searcher.handlersapi.SearchRequest),
+('/search/batch/', searcher.handlersapi.BatchSearchRequest),
 ],
-                              debug=True)
+debug=os.environ['SERVER_SOFTWARE'].startswith('Dev'))
 

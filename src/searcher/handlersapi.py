@@ -24,6 +24,15 @@ def _calculateHash(items):
 
 class SearchRequest(webapp2.RequestHandler):
     def post(self):
+        data = json.loads(self.request.body)
+        uuid = data.get('uuid')
+        if networkutil.isUuidHandled(uuid):
+            message = 'FetchRequest: %s is already handled.' % (uuid, )
+            logging.warn(message)
+            self.response.out.write(message)
+            return
+        networkutil.updateUuids(uuid)
+
         rawdata = self.request.body
         taskqueue.add(queue_name='default', payload=rawdata, url='/search/batch/')
         self.response.headers['Content-Type'] = 'text/plain'

@@ -1,5 +1,5 @@
 
-from searcher import gnews, google
+from searchengine import gnews, google
 
 def search(keyword):
     pages = gnews.search(keyword)

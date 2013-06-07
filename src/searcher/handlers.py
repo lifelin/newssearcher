@@ -3,7 +3,7 @@ import os
 from google.appengine.ext.webapp import template
 import webapp2
 
-from . import bs
+from . import bs, globalconfig
 
 class SearchNews(webapp2.RequestHandler):
     def _render(self, templateValues):
@@ -18,7 +18,7 @@ class SearchNews(webapp2.RequestHandler):
 
     def post(self):
         keyword = self.request.get('keyword').strip()
-        pages = bs.search(keyword)
+        pages = bs.search4Test(keyword, globalconfig.getTwitterAccount())
         templateValues = {
             'keyword': keyword,
             'pages': pages,
